@@ -3,10 +3,11 @@
     "version": "1.0.0",
     "description": "Template for the WebSocket remote control task",
     "main": "index.ts",
-    "type": "module",
+    
     "scripts": {
         "start": "ts-node ./index.ts",
         "start:dev": "ts-node-dev ./index.ts",
+        "start:server": "ts-node-dev ./src/ws_server/index.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Andrei Auchynnikau",
@@ -15,6 +16,7 @@
     "devDependencies": {
         "@types/node": "^20.3.3",
         "@types/webpack": "^5.28.1",
+        "@types/ws": "^8.5.5",
         "@typescript-eslint/eslint-plugin": "^5.60.0",
         "@typescript-eslint/parser": "^5.60.0",
         "eslint": "^8.43.0",
@@ -25,9 +27,7 @@
         "ts-loader": "^9.4.4",
         "ts-node": "^10.9.1",
         "ts-node-dev": "^2.0.0",
-        "typescript": "^5.0.4"
-    },
-    "dependencies": {
-        "ws": "^8.8.0"
+        "typescript": "^5.0.4",
+        "ws": "^8.13.0"
     }
 }

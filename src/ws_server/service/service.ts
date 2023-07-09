@@ -1,10 +1,21 @@
 // import { UserConstructorType } from '../entitites/user';
+import { RegPlayerReqType } from '../models/player';
 import UserRepository from '../repository/UserRepository';
 
 export default class UserService {
   userRepository: UserRepository;
   constructor(userRepository: UserRepository) {
     this.userRepository = userRepository;
+  }
+
+  registration(data: RegPlayerReqType) {
+    const respData = {
+      name: data.name,
+      index: 1,
+      error: false,
+      errorText: '',
+    };
+    return JSON.stringify(respData);
   }
 
   //   allUsers() {

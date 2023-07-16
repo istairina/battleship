@@ -1,13 +1,19 @@
-import UserService from '../service/service';
+import UserService from '../service/userService';
 import { RegPlayerReqType } from '../models/player.js';
+import RoomService from '../service/roomService';
 
 type RoutesProps = {
   userService: UserService;
+  roomService: RoomService;
 };
 
-export const routes = ({ userService }: RoutesProps) => ({
+export const routes = ({ userService, roomService }: RoutesProps) => ({
   reg: (data: RegPlayerReqType) => {
     return userService.registration(data);
+  },
+
+  create_room: () => {
+    roomService.createRoom();
   },
   //   "/api/users:post": async ({ request, response }: handlerProps) => {
   //     const data = (await once(request, "data")) as string[];

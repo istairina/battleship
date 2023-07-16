@@ -17,17 +17,18 @@ export default class UserRepository {
     const newUser = new User({
       username: data.username,
       password: data.password,
-      index: (this.index += 1),
     });
     this.db.push(newUser);
 
     return true;
   }
 
-  checkUser(name: string, password: string) {
-    const userIndex = this.db.findIndex((user) => user.username === name);
-    if (userIndex === -1) return false;
-    if (this.db[userIndex].password !== password) return false;
-    return true;
+  getUserIdx(name: string) {
+    return this.db.findIndex((user) => user.username === name);
+  }
+
+  checkPassword(ind: number, password: string) {
+    if (this.db[ind].password === password) return true;
+    return false;
   }
 }

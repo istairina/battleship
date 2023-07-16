@@ -9,11 +9,24 @@ export default class UserService {
   }
 
   registration(data: RegPlayerReqType) {
+    let error = false;
+    let errorText = '';
+    const userIndx = this.userRepository.getUserIdx(data.username);
+    if (userIndx >= 0) {
+      if (!this.userRepository.checkPassword(userIndx, data.password)) {
+        error = true;
+        errorText = 'Invalid password for the user';
+      }
+    } else {
+      this.userRepository.addUser(data);
+      console.log(`A new user ${data.username} added to a db`);
+    }
+    this.userRepository.addUser(data);
     const respData = {
-      name: data.name,
-      index: 1,
-      error: false,
-      errorText: '',
+      name: data.username,
+      index: userIndx < 0 ? null : userIndx,
+      error: error,
+      errorText: errorText,
     };
     return JSON.stringify(respData);
   }

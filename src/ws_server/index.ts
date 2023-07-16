@@ -1,10 +1,12 @@
 import { WebSocketServer } from 'ws';
 import { RegPlayerReqType } from './models/player';
 import { ReqResp } from './models/reqResp';
-import UserService from './service/service';
-import { generateInstance } from './factory/factory';
+import UserService from './service/userService';
+import { generateUserInstance } from './factory/userFactory';
 import { routes } from './routes/routes';
 import { responseToHttp } from './util/responseToHttp';
+import RoomService from './service/roomService';
+import { generateRoomInstance } from './factory/roomFactory';
 
 type allRoutesTypes = {
   [key: string]: (data: RegPlayerReqType) => string;
@@ -12,10 +14,11 @@ type allRoutesTypes = {
 
 const wss = new WebSocketServer({ port: 3000 });
 
-wss.on('connection', function connection(ws) {
-  const userService: UserService = generateInstance();
-  const userRoutes = routes({ userService });
+const userService: UserService = generateUserInstance();
+const roomService: RoomService = generateRoomInstance();
+const userRoutes = routes({ userService, roomService });
 
+wss.on('connection', function connection(ws) {
   const allRoutes: allRoutesTypes = {
     ...userRoutes,
     default: () => {

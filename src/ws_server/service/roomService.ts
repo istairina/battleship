@@ -36,8 +36,8 @@ export default class RoomService {
     return JSON.stringify(respData);
   }
 
-  startGame(data: { gameId: number; ships: string[]; indexPlayer: number }) {
-    if (this.rooms.addStatusToRoom(data.indexPlayer, data.gameId)) {
+  startGame(data: { gameId: number; ships: []; indexPlayer: number }) {
+    if (this.rooms.addShipsToRoom(data.indexPlayer, data.gameId, data.ships)) {
       const respData = {
         ships: data.ships,
         currentPlayerIndex: data.indexPlayer,
@@ -52,7 +52,7 @@ export default class RoomService {
     const respData = {
       position: { x: data.x, y: data.y },
       currentPlayer: data.indexPlayer,
-      status: 'miss',
+      status: this.rooms.attackCell(data.gameId, data.indexPlayer, data.x, data.y),
     };
     return JSON.stringify(respData);
   }

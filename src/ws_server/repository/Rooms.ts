@@ -5,9 +5,19 @@ type Room = {
   roomUsers: {
     name: string;
     index: number;
-    status?: boolean;
+    ships?: ShipType[];
   }[];
   currentPlayer: 0 | 1;
+};
+
+type ShipType = {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  length: number;
+  type: 'small' | 'medium' | 'large' | 'huge';
 };
 
 export default class Rooms {
@@ -71,13 +81,29 @@ export default class Rooms {
     return this.rooms.findIndex((room) => room.roomId === roomId);
   }
 
-  addStatusToRoom(idPlayer: number, roomId: number) {
+  addShipsToRoom(idPlayer: number, roomId: number, ships: ShipType[]) {
     const ind = this.getIndexRoomByRoomId(roomId);
-    this.rooms[ind].roomUsers[idPlayer].status = true;
+    this.rooms[ind].roomUsers[idPlayer].ships = ships;
     console.log(`Player #${idPlayer} is ready`);
-    if (this.rooms[ind].roomUsers.every((elem) => elem.status === true)) {
+    if (this.rooms[ind].roomUsers.every((elem) => elem.ships)) {
       return true;
     }
     return false;
+  }
+
+  attackCell(gameId: number, currPlayer: number, x: number, y: number) {
+    const ind = this.getIndexRoomByRoomId(gameId);
+    const currField = this.rooms[ind].roomUsers[currPlayer === 0 ? 1 : 0].ships;
+    let status = '';
+    currField?.forEach((cell) => {
+      if (cell.position.x === x && cell.position.y === y) {
+        if (cell.type === 'small') {
+          status = 'killed';
+        } else {
+          status = 'shot';
+        }
+      }
+    });
+    return status ? status : 'miss';
   }
 }

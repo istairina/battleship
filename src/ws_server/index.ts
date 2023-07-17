@@ -8,6 +8,7 @@ import RoomService from './service/roomService';
 import { generateRoomInstance } from './factory/roomFactory';
 import { sendAll } from './util/sendAll';
 import { sendInRoom } from './util/sendInRoom';
+import CurrPlayer from './util/turn';
 
 type allRoutesTypes = {
   [key: string]: (
@@ -40,6 +41,7 @@ const update = (allRoutes: allRoutesTypes, data: string, idx: number) => {
 };
 
 const turn = (currentPlayer: 0 | 1) => {
+  console.log(responseToHttp('turn', JSON.stringify({ currentPlayer: currentPlayer })));
   return responseToHttp('turn', JSON.stringify({ currentPlayer: currentPlayer }));
 };
 
@@ -61,7 +63,7 @@ wss.on('connection', (ws, req) => {
     },
   };
 
-  const currentPlayer = 0;
+  const currPlayer = new CurrPlayer();
 
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
@@ -104,11 +106,20 @@ wss.on('connection', (ws, req) => {
           ws.send(responseToHttp(response.type, response.data));
           const opponentId = ONLINE[idx].opponentId;
           if (opponentId) {
-            ONLINE[opponentId].websocket.send(responseToHttp(response.type, response.data));
-            sendInRoom([idx, opponentId], turn(currentPlayer));
+            sendInRoom([idx, opponentId], turn(currPlayer.getCurrPlayer()));
           }
         }
+        break;
+      }
 
+      case 'attack': {
+        const chosen = allRoutes[request.type] || allRoutes.default;
+        const response = chosen(request.data, idx);
+        const opponentId = ONLINE[idx].opponentId;
+        if (opponentId) {
+          sendInRoom([idx, opponentId], responseToHttp(response.type, response.data));
+          sendInRoom([idx, opponentId], turn(currPlayer.changeCurrPlayer()));
+        }
         break;
       }
 

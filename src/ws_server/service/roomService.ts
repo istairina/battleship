@@ -7,7 +7,13 @@ export default class RoomService {
   }
 
   createRoom() {
-    return;
+    const respData = {
+      idGame: 0,
+      idPlayer: 0,
+    };
+    return JSON.stringify(respData);
+
+
   }
 
   //   allUsers() {

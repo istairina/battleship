@@ -9,7 +9,10 @@ import RoomService from './service/roomService';
 import { generateRoomInstance } from './factory/roomFactory';
 
 type allRoutesTypes = {
-  [key: string]: (data: RegPlayerReqType) => string;
+  [key: string]: (data: string, id?: string) => {
+    type: string,
+    data: string,
+  };
 };
 
 const wss = new WebSocketServer({ port: 3000 });
@@ -18,18 +21,23 @@ const userService: UserService = generateUserInstance();
 const roomService: RoomService = generateRoomInstance();
 const userRoutes = routes({ userService, roomService });
 
-wss.on('connection', function connection(ws) {
+wss.on('connection', (ws, req) => {
+  const id = req.headers['sec-websocket-key'];
   const allRoutes: allRoutesTypes = {
     ...userRoutes,
     default: () => {
-      return '';
+      return {
+        type: '',
+        data: ''
+      };
     },
   };
 
-  ws.on('message', function message(rawData) {
+  ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
     const chosen = allRoutes[request.type] || allRoutes.default;
-    const responseData = chosen(JSON.parse(request.data));
-    ws.send(responseToHttp(request.type, responseData));
+    const response = chosen(request.data);
+    console.log(responseToHttp(response.type, response.data))
+    ws.send(responseToHttp(response.type, response.data));
   });
 });

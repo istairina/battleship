@@ -8,12 +8,19 @@ type RoutesProps = {
 };
 
 export const routes = ({ userService, roomService }: RoutesProps) => ({
-  reg: (data: RegPlayerReqType) => {
-    return userService.registration(data);
+  reg: (data: string, type = "reg") => {
+    const parsedData = JSON.parse(data);
+    return {
+      type: type,
+      data: userService.registration(parsedData)
+    };
   },
 
-  create_room: () => {
-    roomService.createRoom();
+  create_room: (data: string, type = "create_game") => {
+    return {
+      type: type,
+      data: roomService.createRoom()
+    };
   },
   //   "/api/users:post": async ({ request, response }: handlerProps) => {
   //     const data = (await once(request, "data")) as string[];

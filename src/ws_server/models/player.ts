@@ -1,5 +1,5 @@
 export type RegPlayerReqType = {
-  username: string;
+  name: string;
   password: string;
 };
 

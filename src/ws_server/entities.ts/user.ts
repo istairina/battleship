@@ -1,5 +1,5 @@
 export type UserConstructorType = {
-  username: string;
+  name: string;
   password: string;
 };
 
@@ -8,7 +8,7 @@ export default class User {
   password: string;
   winAmount: number;
 
-  constructor({ username, password }: UserConstructorType) {
-    (this.username = username), (this.password = password), (this.winAmount = 0);
+  constructor({ name, password }: UserConstructorType) {
+    (this.username = name), (this.password = password), (this.winAmount = 0);
   }
 }

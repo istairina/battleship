@@ -11,7 +11,7 @@ export default class UserService {
   registration(data: RegPlayerReqType) {
     let error = false;
     let errorText = '';
-    const userIndx = this.userRepository.getUserIdx(data.username);
+    const userIndx = this.userRepository.getUserIdx(data.name);
     if (userIndx >= 0) {
       if (!this.userRepository.checkPassword(userIndx, data.password)) {
         error = true;
@@ -19,16 +19,17 @@ export default class UserService {
       }
     } else {
       this.userRepository.addUser(data);
-      console.log(`A new user ${data.username} added to a db`);
-    }
-    this.userRepository.addUser(data);
+      console.log(`A new user ${data.name} added to a db`);
+    };
     const respData = {
-      name: data.username,
+      name: data.name,
       index: userIndx < 0 ? null : userIndx,
       error: error,
       errorText: errorText,
     };
-    return JSON.stringify(respData);
+    return JSON.stringify(respData)
+
+
   }
 
   //   allUsers() {

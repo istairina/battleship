@@ -3,10 +3,9 @@
     "version": "1.0.0",
     "description": "Template for the WebSocket remote control task",
     "main": "index.ts",
-    
     "scripts": {
         "start": "ts-node ./index.ts",
-        "start:dev": "ts-node-dev ./index.ts ./src/ws_server/index.ts",
+        "start:dev": "ts-node-dev ./index.ts",
         "start:server": "ts-node-dev ./src/ws_server/index.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },

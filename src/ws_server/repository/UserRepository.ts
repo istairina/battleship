@@ -15,11 +15,11 @@ export default class UserRepository {
 
   addUser(data: UserConstructorType) {
     const newUser = new User({
-      username: data.username,
+      name: data.name,
       password: data.password,
     });
     this.db.push(newUser);
-
+    console.log(this.getUsers())
     return true;
   }
 

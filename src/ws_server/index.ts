@@ -41,7 +41,6 @@ const update = (allRoutes: allRoutesTypes, data: string, idx: number) => {
 };
 
 const turn = (currentPlayer: 0 | 1) => {
-  console.log(responseToHttp('turn', JSON.stringify({ currentPlayer: currentPlayer })));
   return responseToHttp('turn', JSON.stringify({ currentPlayer: currentPlayer }));
 };
 

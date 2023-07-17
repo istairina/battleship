@@ -68,7 +68,6 @@ export default class Rooms {
   getIndexPlayerByRoomId(roomId: number, idx: number) {
     const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
     const name = userService.userRepository.getNamebyId(idx);
-    console.log(name);
     return this.rooms[indRoom].roomUsers[0].name === name ? 0 : 1;
   }
 

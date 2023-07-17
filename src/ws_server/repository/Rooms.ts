@@ -1,6 +1,9 @@
 type Room = {
-  user1?: string;
-  user2?: string;
+  roomId: number,
+  roomUsers: {
+    name: string,
+    index: number,
+  }[]
 };
 
 export default class Rooms {
@@ -14,12 +17,23 @@ export default class Rooms {
     return this.rooms;
   }
 
-  addRoom() {
-    this.rooms.push({});
-    return this.rooms.length - 1;
+  generateId() {
+    return Math.round(Math.random() * 1000);
   }
 
-  addUserToRoom(indx: number, username: string) {
-    this.rooms[indx].user1 = username;
+  addRoom() {
+    const roomId = this.generateId()
+    this.rooms.push({
+      roomId: roomId,
+      roomUsers: [],
+    });
+    return roomId;
+  }
+
+  addUserToRoom(roomId: number, username: string) {
+    const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
+    const indPlayer = this.rooms[indRoom].roomUsers.length > 0 ? 1 : 0;
+    this.rooms[indRoom].roomUsers.push({ name: username, index: indPlayer })
+    return indPlayer;
   }
 }

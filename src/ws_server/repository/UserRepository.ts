@@ -2,11 +2,9 @@ import User, { UserConstructorType } from '../entities.ts/user';
 
 export default class UserRepository {
   db: User[];
-  index: number;
 
   constructor() {
     this.db = [];
-    this.index = -1;
   }
 
   getUsers() {
@@ -17,9 +15,14 @@ export default class UserRepository {
     const newUser = new User({
       name: data.name,
       password: data.password,
+      id: data.id,
     });
     this.db.push(newUser);
-    console.log(this.getUsers())
+    return true;
+  }
+
+  changeUser(idx: number, newId: number) {
+    this.db[idx].id = newId;
     return true;
   }
 
@@ -30,5 +33,10 @@ export default class UserRepository {
   checkPassword(ind: number, password: string) {
     if (this.db[ind].password === password) return true;
     return false;
+  }
+
+  getNamebyId(id: number) {
+    const indOfId = this.db.findIndex((user) => user.id === id);
+    return this.db[indOfId].username;
   }
 }

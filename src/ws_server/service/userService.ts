@@ -8,7 +8,7 @@ export default class UserService {
     this.userRepository = userRepository;
   }
 
-  registration(data: RegPlayerReqType) {
+  registration(data: RegPlayerReqType, id: number) {
     let error = false;
     let errorText = '';
     const userIndx = this.userRepository.getUserIdx(data.name);
@@ -16,14 +16,17 @@ export default class UserService {
       if (!this.userRepository.checkPassword(userIndx, data.password)) {
         error = true;
         errorText = 'Invalid password for the user';
+      } else {
+        this.userRepository.changeUser(userIndx, id);
+        console.log(`Welcome back ${data.name}! Your id now is ${id}`);
       }
     } else {
-      this.userRepository.addUser(data);
-      console.log(`A new user ${data.name} added to a db`);
+      this.userRepository.addUser({ ...data, id });
+      console.log(`A new user ${data.name} with id #${id} added to a db`);
     };
     const respData = {
       name: data.name,
-      index: userIndx < 0 ? null : userIndx,
+      index: userIndx,
       error: error,
       errorText: errorText,
     };

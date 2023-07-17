@@ -1,3 +1,4 @@
+import { userService } from '..';
 import Rooms from '../repository/Rooms';
 
 export default class RoomService {
@@ -6,14 +7,23 @@ export default class RoomService {
     this.rooms = rooms;
   }
 
-  createRoom() {
+  createRoom(id: number) {
+    const roomId = this.rooms.addRoom();
+    const name = userService.userRepository.getNamebyId(id)
+    const idPlayer = this.rooms.addUserToRoom(roomId, name);
     const respData = {
-      idGame: 0,
-      idPlayer: 0,
+      idGame: roomId,
+      idPlayer: idPlayer,
     };
     return JSON.stringify(respData);
 
+  }
 
+  updateRoom() {
+    const allRooms = this.rooms.getRooms();
+    console.log(`Now is ${allRooms.length} room${allRooms.length > 0 ? 's' : ''}`);
+    const roomsWithOnePlayer = allRooms.filter((room) => room.roomUsers.length < 2);
+    return JSON.stringify(roomsWithOnePlayer);
   }
 
   //   allUsers() {

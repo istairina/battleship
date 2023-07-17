@@ -1,31 +1,42 @@
 # RSSchool NodeJS websocket task template
-> Static http server and base task packages. 
+
+> Static http server and base task packages.
 > By default WebSocket client tries to connect to the 3000 port.
 
 ## Installation
+
 1. Clone/download repo
-2. `npm install`
+
+```
+git clone https://github.com/istairina/battleship.git
+```
+
+2. Switch to project folder
+
+```
+cd battleship
+```
+
+3. Install all dependencies
+
+```
+`npm install`
+```
 
 ## Usage
+
 **Development**
+To start HTTP server:
 
-`npm run start:dev`
+```
+npm run start:dev
+```
 
-* App served @ `http://localhost:8181` with nodemon
+To start WebSocket server:
 
-**Production**
+```
+npm run start:server
+```
 
-`npm run start`
-
-* App served @ `http://localhost:8181` without nodemon
-
----
-
-**All commands**
-
-Command | Description
---- | ---
-`npm run start:dev` | App served @ `http://localhost:8181` with nodemon
-`npm run start` | App served @ `http://localhost:8181` without nodemon
-
-**Note**: replace `npm` with `yarn` in `package.json` if you use yarn.
+Open http://localhost:8181/ on different pages in browser. Login with different names, choose one room and the game will begin. It's a very buggy game )))
+I haven't finished it, but you can see my self-esteem in PR

@@ -46,24 +46,40 @@ wss.on('connection', (ws, req) => {
 
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
-    if (request.type === "create_room") {
-      const createGame = allRoutes[request.type];
-      const response = createGame(request.data, idx);
 
-      ws.send(responseToHttp(response.type, response.data));
-      const updateRoom = allRoutes["update_room"];
-      const responseUpdateRoom = updateRoom(request.data, idx);
+    switch (request.type) {
+      case "create_room":
+        const createGame = allRoutes[request.type];
+        const responseCreate = createGame(request.data, idx);
+        ws.send(responseToHttp(responseCreate.type, responseCreate.data)); //personal response
 
-      // ws.send(responseToHttp(responseUpdateRoom.type, responseUpdateRoom.data));
-      sendAll(responseToHttp(responseUpdateRoom.type, responseUpdateRoom.data), online);
-    } else {
-      const chosen = allRoutes[request.type] || allRoutes.default;
-      const response = chosen(request.data, idx);
+        const updateRoom = allRoutes["update_room"];
+        const responseUpdateRoom = updateRoom(request.data, idx);
+        sendAll(responseToHttp(responseUpdateRoom.type, responseUpdateRoom.data), online);
+        break;
 
-      // ws.send(responseToHttp(response.type, response.data));
-      online[idx].send(responseToHttp(response.type, response.data));
+      case "add_user_to_room":
+        const addUserToRoom = allRoutes["add_user_to_room"];
+        const responseAddtoRoom = addUserToRoom(request.data, idx);
+        ws.send(responseToHttp(responseAddtoRoom.type, responseAddtoRoom.data)); //personal response
+        const rawData = JSON.parse(request.data);
+        const usersInRoom = roomService.rooms.getUsersByRoombyId(rawData.indexRoom);
+        const nameOtherUser = usersInRoom[0].name === userService.userRepository.getNamebyId(idx) ? usersInRoom[1].name : usersInRoom[0].name;
+        const idxOtherUser = userService.userRepository.getUserIdx(nameOtherUser);
+        console.log(responseToHttp(responseAddtoRoom.type, { ...rawData, idPlayer: rawData.idPlayer === 0 ? 1 : 0 }));
+        online[idxOtherUser].send(responseToHttp(responseAddtoRoom.type, { ...rawData, idPlayer: rawData.idPlayer === 0 ? 1 : 0 }));
+        // sendAll(responseToHttp(responseAddtoRoom.type, responseAddtoRoom.data), online);
+        break;
+
+      default:
+        const chosen = allRoutes[request.type] || allRoutes.default;
+        const response = chosen(request.data, idx);
+
+        // ws.send(responseToHttp(response.type, response.data));
+        online[idx].send(responseToHttp(response.type, response.data));
+        break;
+
     }
-
   });
 
   ws.on('close', () => {

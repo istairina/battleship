@@ -1,3 +1,5 @@
+import { userService } from "..";
+
 type Room = {
   roomId: number,
   roomUsers: {
@@ -33,7 +35,29 @@ export default class Rooms {
   addUserToRoom(roomId: number, username: string) {
     const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
     const indPlayer = this.rooms[indRoom].roomUsers.length > 0 ? 1 : 0;
-    this.rooms[indRoom].roomUsers.push({ name: username, index: indPlayer })
+    this.rooms[indRoom].roomUsers.push({ name: username, index: indPlayer });
+
+    if (this.rooms[indRoom].roomUsers.length == 2) {
+      const oldRoom = this.rooms.findIndex((room) => room.roomUsers[0].name === username);
+      if (oldRoom >= 0) { this.deleteRoom(this.rooms[oldRoom].roomId); }
+    }
     return indPlayer;
+  }
+
+  deleteRoom(roomId: number) {
+    const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
+    this.rooms.splice(indRoom, 1);
+  }
+
+  getIndexPlayerByRoomId(roomId: number, idx: number) {
+    const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
+    const name = userService.userRepository.getNamebyId(idx);
+    console.log(name);
+    return this.rooms[indRoom].roomUsers[0].name === name ? 0 : 1;
+  }
+
+  getUsersByRoombyId(roomId: number) {
+    const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
+    return this.rooms[indRoom].roomUsers;
   }
 }

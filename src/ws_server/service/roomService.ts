@@ -9,14 +9,13 @@ export default class RoomService {
 
   createRoom(id: number) {
     const roomId = this.rooms.addRoom();
-    const name = userService.userRepository.getNamebyId(id)
+    const name = userService.userRepository.getNamebyId(id);
     const idPlayer = this.rooms.addUserToRoom(roomId, name);
     const respData = {
       idGame: roomId,
       idPlayer: idPlayer,
     };
     return JSON.stringify(respData);
-
   }
 
   updateRoom() {
@@ -24,6 +23,16 @@ export default class RoomService {
     console.log(`Now is ${allRooms.length} room${allRooms.length > 0 ? 's' : ''}`);
     const roomsWithOnePlayer = allRooms.filter((room) => room.roomUsers.length < 2);
     return JSON.stringify(roomsWithOnePlayer);
+  }
+
+  addUserToRoom(roomId: number, idUser: number) {
+    const username = userService.userRepository.getNamebyId(idUser);
+    const idPlayer = this.rooms.addUserToRoom(roomId, username);
+    const respData = {
+      idGame: roomId,
+      idPlayer: idPlayer,
+    };
+    return JSON.stringify(respData);
   }
 
   //   allUsers() {

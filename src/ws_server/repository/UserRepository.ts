@@ -30,6 +30,10 @@ export default class UserRepository {
     return this.db.findIndex((user) => user.username === name);
   }
 
+  getUserLoginId(name: string) {
+    return this.db[this.getUserIdx(name)].id;
+  }
+
   checkPassword(ind: number, password: string) {
     if (this.db[ind].password === password) return true;
     return false;

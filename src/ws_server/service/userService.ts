@@ -1,6 +1,7 @@
-// import { UserConstructorType } from '../entitites/user';
 import { RegPlayerReqType } from '../models/player';
 import UserRepository from '../repository/UserRepository';
+import { ONLINE } from '..';
+import { checkIsOnline } from '../util/checkIsOnline';
 
 export default class UserService {
   userRepository: UserRepository;
@@ -17,54 +18,26 @@ export default class UserService {
         error = true;
         errorText = 'Invalid password for the user';
       } else {
-        this.userRepository.changeUser(userIndx, id);
-        console.log(`Welcome back ${data.name}! Your id now is ${id}`);
+        if (checkIsOnline(data.name)) {
+          error = true;
+          errorText = 'A user with the name is already online';
+        } else {
+          this.userRepository.changeUser(userIndx, id);
+          ONLINE[id].name = data.name;
+          console.log(`Welcome back ${data.name}! Your id now is ${id}`);
+        }
       }
     } else {
       this.userRepository.addUser({ ...data, id });
+      ONLINE[id].name = data.name;
       console.log(`A new user ${data.name} with id #${id} added to a db`);
-    };
+    }
     const respData = {
       name: data.name,
       index: userIndx,
       error: error,
       errorText: errorText,
     };
-    return JSON.stringify(respData)
-
-
+    return JSON.stringify(respData);
   }
-
-  //   allUsers() {
-  //     return this.userRepository.getUsers();
-  //   }
-
-  //   getById(id: unknown) {
-  //     if (!validateUUID(id)) throw new Error("400");
-
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
-
-  //     return this.userRepository.getUserById(String(id));
-  //   }
-
-  //   addUser(data: { [key: string]: string | number | string[] }) {
-  //     if (!validateUser(data)) throw new Error("400");
-  //     return this.userRepository.createUser(data as UserConstructorType);
-  //   }
-
-  //   updateUser(id: unknown, data: { [key: string]: string | number | string[] }) {
-  //     if (!validateUUID(id)) throw new Error("400");
-  //     if (!validateUser(data)) throw new Error("400");
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
-  //     return this.userRepository.updateUser(
-  //       String(id),
-  //       data as UserConstructorType
-  //     );
-  //   }
-
-  //   deleteUser(id: unknown) {
-  //     if (!validateUUID(id)) throw new Error("400");
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
-  //     return this.userRepository.deleteUser(String(id));
-  //   }
 }

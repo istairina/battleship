@@ -20,8 +20,9 @@ export default class RoomService {
 
   updateRoom() {
     const allRooms = this.rooms.getRooms();
-    console.log(`Now is ${allRooms.length} room${allRooms.length > 0 ? 's' : ''}`);
+    console.log(`Now there is ${allRooms.length} room${allRooms.length > 0 ? 's' : ''}`);
     const roomsWithOnePlayer = allRooms.filter((room) => room.roomUsers.length < 2);
+    console.log(`Rooms with one player: ${roomsWithOnePlayer.length}`);
     return JSON.stringify(roomsWithOnePlayer);
   }
 
@@ -35,36 +36,31 @@ export default class RoomService {
     return JSON.stringify(respData);
   }
 
-  //   allUsers() {
-  //     return this.userRepository.getUsers();
-  //   }
+  startGame(data: { gameId: number; ships: string[]; indexPlayer: number }) {
+    if (this.rooms.addStatusToRoom(data.indexPlayer, data.gameId)) {
+      const respData = {
+        ships: data.ships,
+        currentPlayerIndex: data.indexPlayer,
+      };
 
-  //   getById(id: unknown) {
-  //     if (!validateUUID(id)) throw new Error("400");
+      return JSON.stringify(respData);
+    }
+    return '';
+  }
 
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
+  attack(data: { gameId: number; x: number; y: number; indexPlayer: number }) {
+    const respData = {
+      position: { x: data.x, y: data.y },
+      currentPlayer: data.indexPlayer,
+      status: 'miss',
+    };
+    return JSON.stringify(respData);
+  }
 
-  //     return this.userRepository.getUserById(String(id));
-  //   }
-
-  //   addUser(data: { [key: string]: string | number | string[] }) {
-  //     if (!validateUser(data)) throw new Error("400");
-  //     return this.userRepository.createUser(data as UserConstructorType);
-  //   }
-
-  //   updateUser(id: unknown, data: { [key: string]: string | number | string[] }) {
-  //     if (!validateUUID(id)) throw new Error("400");
-  //     if (!validateUser(data)) throw new Error("400");
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
-  //     return this.userRepository.updateUser(
-  //       String(id),
-  //       data as UserConstructorType
-  //     );
-  //   }
-
-  //   deleteUser(id: unknown) {
-  //     if (!validateUUID(id)) throw new Error("400");
-  //     if (!this.userRepository.getUserById(String(id))) throw new Error("404");
-  //     return this.userRepository.deleteUser(String(id));
-  //   }
+  turn() {
+    const respData = {
+      currentPlayer: 0,
+    };
+    return JSON.stringify(respData);
+  }
 }

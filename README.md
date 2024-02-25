@@ -26,16 +26,10 @@ cd battleship
 ## Usage
 
 **Development**
-To start HTTP server:
+To start HTTP server and WS Server
 
 ```
-npm run start:dev
-```
-
-To start WebSocket server:
-
-```
-npm run start:server
+npm run start
 ```
 
 Open http://localhost:8181/ on different pages in browser. Login with different names, choose one room and the game will begin. It's a very buggy game )))

@@ -76,6 +76,11 @@ export default class Rooms {
     return this.rooms[indRoom].roomUsers;
   }
 
+  getEnemyIdByRoomId(roomId: number) {
+    // const indRoom = this.rooms.findIndex((room) => room.roomId === roomId);
+    console.log(this.getUsersByRoombyId(roomId));
+  }
+
   getIndexRoomByRoomId(roomId: number) {
     return this.rooms.findIndex((room) => room.roomId === roomId);
   }
@@ -83,8 +88,14 @@ export default class Rooms {
   addShipsToRoom(idPlayer: number, roomId: number, ships: ShipType[]) {
     const ind = this.getIndexRoomByRoomId(roomId);
     this.rooms[ind].roomUsers[idPlayer].ships = ships;
-    console.log(`Player #${idPlayer} is ready`);
-    if (this.rooms[ind].roomUsers.every((elem) => elem.ships)) {
+    if (ships.length === 10) {
+      console.log(`Player #${idPlayer} is ready`);
+    }
+
+    if (
+      this.rooms[ind].roomUsers.length === 2 &&
+      this.rooms[ind].roomUsers.every((user) => user.ships && user.ships?.length === 10)
+    ) {
       return true;
     }
     return false;

@@ -31,14 +31,16 @@ export const routes = ({ userService, roomService }: RoutesProps) => ({
 
   add_user_to_room: (data: string, id: number, type = 'create_game') => {
     const parsedData = JSON.parse(data);
+    const dataT = roomService.addUserToRoom(parsedData.indexRoom as number, id);
     return {
       type: type,
-      data: roomService.addUserToRoom(parsedData.indexRoom as number, id),
+      data: dataT,
     };
   },
 
   add_ships: (data: string, id: number, type = 'start_game') => {
     const parsedData = JSON.parse(data);
+
     return {
       type: type,
       data: roomService.startGame(parsedData),

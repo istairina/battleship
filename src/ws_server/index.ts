@@ -102,9 +102,10 @@ wss.on('connection', (ws, req) => {
         const chosen = allRoutes[request.type] || allRoutes.default;
         const response = chosen(request.data, idx);
         if (response.data) {
-          ws.send(responseToHttp(response.type, response.data));
           const opponentId = ONLINE[idx].opponentId;
+
           if (opponentId) {
+            sendInRoom([idx, opponentId], responseToHttp(response.type, response.data));
             sendInRoom([idx, opponentId], turn(currPlayer.getCurrPlayer()));
           }
         }

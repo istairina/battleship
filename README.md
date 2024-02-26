@@ -32,5 +32,5 @@ To start HTTP server and WS Server
 npm run start
 ```
 
-Open http://localhost:8181/ on different pages in browser. Login with different names, choose one room and the game will begin. It's a very buggy game )))
+Open http://localhost:8181/ on different pages in browser. Login with different names, choose one room and the game will begin after setup ships. It's a buggy game )))
 I haven't finished it, but you can see my self-esteem in PR

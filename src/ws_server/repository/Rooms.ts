@@ -168,16 +168,42 @@ export default class Rooms {
     let status = '';
     if (currField) {
       const len = currField[y][x].length || undefined;
-
-      if (len && !currField[y][x].hasShot) {
-        currField[y][x].hasShot = true;
-        if (len === 1) {
+      currField[y][x].hasShot = true;
+      switch (len) {
+        case 1:
           status = 'killed';
-        } else {
+          break;
+        case 2:
+          for (let i = 1; i < len; i++) {
+            if (currField[y][x].direction) {
+              if (
+                (y - i >= 0 && currField[y - i][x].hasShot && currField[y - i][x].length) ||
+                (y + i < 10 && currField[y + i][x].hasShot && currField[y + i][x].length)
+              ) {
+                status = 'killed';
+              } else {
+                status = 'shot';
+              }
+            } else {
+              if (
+                (x - i >= 0 && currField[y][x - i].hasShot && currField[y][x - i].length) ||
+                (x + i < 10 && currField[y][x + i].hasShot && currField[y][x + i].length)
+              ) {
+                status = 'killed';
+              } else {
+                status = 'shot';
+              }
+            }
+          }
+
+          break;
+        case undefined:
+          status = 'miss';
+          break;
+        default:
           status = 'shot';
-        }
+          break;
       }
-      if (!len) status = 'miss';
     }
 
     return status;

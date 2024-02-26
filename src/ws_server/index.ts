@@ -69,7 +69,6 @@ wss.on('connection', (ws, req) => {
 
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
-    console.log(request.type);
     switch (request.type) {
       case 'create_room': {
         const createGame = allRoutes[request.type];
@@ -129,7 +128,6 @@ wss.on('connection', (ws, req) => {
           x: Math.floor(Math.random() * 10),
           y: Math.floor(Math.random() * 10),
         };
-        console.log(request.data, requestData.x);
         const response = chosen(
           typeof requestData.x === 'number' ? request.data : JSON.stringify(data),
           idx

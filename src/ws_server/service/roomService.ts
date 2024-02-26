@@ -53,6 +53,22 @@ export default class RoomService {
   }
 
   attack(data: { gameId: number; x: number; y: number; indexPlayer: number }) {
+    if (this.getCurrentPlayer(data.gameId) !== data.indexPlayer) {
+      return JSON.stringify('');
+    }
+
+    const status = this.rooms.attackCell(data.gameId, data.indexPlayer, data.x, data.y);
+
+    const respData = {
+      position: { x: data.x, y: data.y },
+      currentPlayer: data.indexPlayer,
+      status,
+    };
+    this.rooms.turn(data.gameId);
+    return JSON.stringify(respData);
+  }
+
+  attackAfterKilled(data: { gameId: number; x: number; y: number; indexPlayer: number }) {
     const status = this.rooms.attackCell(data.gameId, data.indexPlayer, data.x, data.y);
     if (!status) {
       return JSON.stringify('');

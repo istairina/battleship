@@ -69,7 +69,7 @@ wss.on('connection', (ws, req) => {
 
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
-
+    console.log(request.type);
     switch (request.type) {
       case 'create_room': {
         const createGame = allRoutes[request.type];
@@ -115,16 +115,75 @@ wss.on('connection', (ws, req) => {
         break;
       }
 
-      case 'attack': {
-        const chosen = allRoutes[request.type] || allRoutes.default;
-        const response = chosen(request.data, idx);
+      case 'attack':
+      case 'randomAttack': {
+        const chosen = allRoutes['attack'] || allRoutes.default;
+        const requestData = JSON.parse(request.data) as {
+          gameId: number;
+          indexPlayer: number;
+          x?: number;
+          y?: number;
+        };
+        const data = {
+          ...requestData,
+          x: Math.floor(Math.random() * 10),
+          y: Math.floor(Math.random() * 10),
+        };
+        console.log(request.data, requestData.x);
+        const response = chosen(
+          typeof requestData.x === 'number' ? request.data : JSON.stringify(data),
+          idx
+        );
         if (!response.data) return;
         const opponentId = ONLINE[idx].opponentId;
         const gameId = JSON.parse(request.data).gameId as number;
+        const responseShot = JSON.parse(response.data) as {
+          position: {
+            x: number;
+            y: number;
+          };
+          currentPlayer: number;
+          status: string;
+        };
+
+        const responseShotStatus = responseShot.status;
+
         if (opponentId) {
           sendInRoom([idx, opponentId], responseToHttp(response.type, response.data));
+          if (responseShotStatus === 'killed') {
+            const x = responseShot.position.x;
+            const y = responseShot.position.y;
+            const neighbourCells: number[][] = [
+              [x - 1, y],
+              [x + 1, y],
+              [x, y - 1],
+              [x, y + 1],
+              [x - 1, y - 1],
+              [x - 1, y + 1],
+              [x + 1, y - 1],
+              [x + 1, y + 1],
+            ].filter(([x, y]) => x >= 0 && y >= 0);
+            const data = JSON.parse(request.data) as {
+              gameId: number;
+              x: number;
+              y: number;
+              indexPlayer: number;
+            };
+            for (let i = 0; i < neighbourCells.length; i++) {
+              const responseData = roomService.attackAfterKilled({
+                ...data,
+                x: neighbourCells[i][0],
+                y: neighbourCells[i][1],
+              });
+              sendInRoom([idx, opponentId], responseToHttp(response.type, responseData));
+            }
+          }
           sendInRoom([idx, opponentId], turn(gameId));
         }
+        break;
+      }
+
+      case 'single_play': {
         break;
       }
 

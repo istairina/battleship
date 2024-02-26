@@ -1,12 +1,18 @@
 import { userService } from '..';
 
+type shotCellType = {
+  length?: number;
+  direction?: boolean;
+  hasShot: boolean;
+};
+
 type Room = {
   roomId: number;
   roomUsers: {
     name: string;
     index: number;
     ships?: ShipType[];
-    field?: (boolean | 'X' | '-')[][];
+    field?: shotCellType[][];
     shots?: shotType[][];
   }[];
   currentPlayer?: 0 | 1;
@@ -124,17 +130,29 @@ export default class Rooms {
   }
 
   createField(ships: ShipType[]) {
-    const field = Array(10)
-      .fill(false)
-      .map((x) => Array(10).fill(false));
+    const defaultCell: shotCellType = {
+      hasShot: false,
+    };
+    const field: shotCellType[][] = Array(10)
+      .fill([])
+      .map((x) => Array(10).fill(defaultCell));
+    // for (let i = 0; i < field.length; i++) {
+    //   console.log(field[i].join(' '));
+    // }
 
     ships.forEach((ship) => {
-      field[ship.position.y][ship.position.x] = true;
+      const filledCell: shotCellType = {
+        length: ship.length,
+        direction: ship.direction,
+        hasShot: false,
+      };
+
+      field[ship.position.y][ship.position.x] = { ...filledCell };
       for (let i = 1; i < ship.length; i++) {
         if (ship.direction) {
-          field[ship.position.y + i][ship.position.x] = true;
+          field[ship.position.y + i][ship.position.x] = filledCell;
         } else {
-          field[ship.position.y][ship.position.x + i] = true;
+          field[ship.position.y][ship.position.x + i] = filledCell;
         }
       }
     });
@@ -147,24 +165,22 @@ export default class Rooms {
   attackCell(gameId: number, currPlayer: number, x: number, y: number) {
     const ind = this.getIndexRoomByRoomId(gameId);
     const currField = this.rooms[ind].roomUsers[currPlayer === 0 ? 1 : 0].field;
-    if (currPlayer !== this.rooms[ind].currentPlayer) return;
     let status = '';
     if (currField) {
-      if (currField[y][x] === true) {
-        currField[y][x] = 'X';
-        for (let i = 0; i < currField.length; i++) {
-          console.log(currField[i].join(' '));
+      const len = currField[y][x].length || undefined;
+
+      if (len && !currField[y][x].hasShot) {
+        currField[y][x].hasShot = true;
+        if (len === 1) {
+          status = 'killed';
+        } else {
+          status = 'shot';
         }
-        status = 'shot';
       }
-      if (currField[y][x] === false) {
-        currField[y][x] = '-';
-        status = 'miss';
-      }
+      if (!len) status = 'miss';
     }
 
-    this.turn(gameId);
-    return status ? status : 'miss';
+    return status;
   }
 
   turn(gameId: number) {

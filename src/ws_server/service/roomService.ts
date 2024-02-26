@@ -1,5 +1,5 @@
 import { userService } from '..';
-import Rooms from '../repository/Rooms';
+import Rooms, { ShipType } from '../repository/Rooms';
 
 export default class RoomService {
   rooms: Rooms;
@@ -16,6 +16,10 @@ export default class RoomService {
       idPlayer: idPlayer,
     };
     return JSON.stringify(respData);
+  }
+
+  getRoom(id: number) {
+    return this.rooms.getRoom(id);
   }
 
   updateRoom() {
@@ -36,7 +40,7 @@ export default class RoomService {
     return JSON.stringify(respData);
   }
 
-  startGame(data: { gameId: number; ships: []; indexPlayer: number }) {
+  startGame(data: { gameId: number; ships: ShipType[]; indexPlayer: number }) {
     if (this.rooms.addShipsToRoom(data.indexPlayer, data.gameId, data.ships)) {
       const respData = {
         ships: data.ships,
@@ -49,18 +53,32 @@ export default class RoomService {
   }
 
   attack(data: { gameId: number; x: number; y: number; indexPlayer: number }) {
+    const status = this.rooms.attackCell(data.gameId, data.indexPlayer, data.x, data.y);
+    if (!status) {
+      return JSON.stringify('');
+    }
+
     const respData = {
       position: { x: data.x, y: data.y },
       currentPlayer: data.indexPlayer,
-      status: this.rooms.attackCell(data.gameId, data.indexPlayer, data.x, data.y),
+      status,
     };
+
     return JSON.stringify(respData);
   }
 
-  turn() {
-    const respData = {
-      currentPlayer: 0,
-    };
-    return JSON.stringify(respData);
+  // turn(id: number) {
+  //   const respData = {
+  //     currentPlayer: this.rooms.turn(),
+  //   };
+  //   return JSON.stringify(respData);
+  // }
+
+  getIndexPlayerByPlayerId(id: number) {
+    return this.rooms.getIndexPlayerByPlayerId(id);
+  }
+
+  getCurrentPlayer(id: number) {
+    return this.rooms.getCurrentPlayer(id);
   }
 }

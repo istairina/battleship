@@ -49,16 +49,11 @@ export const routes = ({ userService, roomService }: RoutesProps) => ({
 
   attack: (data: string, id: number, type = 'attack') => {
     const parsedData = JSON.parse(data);
+    const dataT = roomService.attack(parsedData);
+    if (!dataT) return { type: '', data: '' };
     return {
       type: type,
-      data: roomService.attack(parsedData),
-    };
-  },
-
-  turn: (data: string, id: number, type = 'turn') => {
-    return {
-      type: type,
-      data: roomService.turn(),
+      data: dataT || '',
     };
   },
 });

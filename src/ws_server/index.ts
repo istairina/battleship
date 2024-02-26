@@ -8,7 +8,7 @@ import RoomService from './service/roomService';
 import { generateRoomInstance } from './factory/roomFactory';
 import { sendAll } from './util/sendAll';
 import { sendInRoom } from './util/sendInRoom';
-import CurrPlayer from './util/turn';
+// import CurrPlayer from './util/turn';
 
 type allRoutesTypes = {
   [key: string]: (
@@ -40,8 +40,11 @@ const update = (allRoutes: allRoutesTypes, data: string, idx: number) => {
   sendAll(responseToHttp(responseUpdateRoom.type, responseUpdateRoom.data), ONLINE);
 };
 
-const turn = (currentPlayer: 0 | 1) => {
-  return responseToHttp('turn', JSON.stringify({ currentPlayer: currentPlayer }));
+const turn = (gameId: number) => {
+  return responseToHttp(
+    'turn',
+    JSON.stringify({ currentPlayer: roomService.getCurrentPlayer(gameId) })
+  );
 };
 
 wss.on('connection', (ws, req) => {
@@ -62,7 +65,7 @@ wss.on('connection', (ws, req) => {
     },
   };
 
-  const currPlayer = new CurrPlayer();
+  // const currPlayer = new CurrPlayer();
 
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
@@ -103,10 +106,10 @@ wss.on('connection', (ws, req) => {
         const response = chosen(request.data, idx);
         if (response.data) {
           const opponentId = ONLINE[idx].opponentId;
-
+          const gameId = JSON.parse(request.data).gameId as number;
           if (opponentId) {
             sendInRoom([idx, opponentId], responseToHttp(response.type, response.data));
-            sendInRoom([idx, opponentId], turn(currPlayer.getCurrPlayer()));
+            sendInRoom([idx, opponentId], turn(gameId));
           }
         }
         break;
@@ -115,10 +118,12 @@ wss.on('connection', (ws, req) => {
       case 'attack': {
         const chosen = allRoutes[request.type] || allRoutes.default;
         const response = chosen(request.data, idx);
+        if (!response.data) return;
         const opponentId = ONLINE[idx].opponentId;
+        const gameId = JSON.parse(request.data).gameId as number;
         if (opponentId) {
           sendInRoom([idx, opponentId], responseToHttp(response.type, response.data));
-          sendInRoom([idx, opponentId], turn(currPlayer.changeCurrPlayer()));
+          sendInRoom([idx, opponentId], turn(gameId));
         }
         break;
       }

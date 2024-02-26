@@ -8,7 +8,6 @@ import RoomService from './service/roomService';
 import { generateRoomInstance } from './factory/roomFactory';
 import { sendAll } from './util/sendAll';
 import { sendInRoom } from './util/sendInRoom';
-// import CurrPlayer from './util/turn';
 
 type allRoutesTypes = {
   [key: string]: (
@@ -65,10 +64,9 @@ wss.on('connection', (ws, req) => {
     },
   };
 
-  // const currPlayer = new CurrPlayer();
-
   ws.on('message', (rawData) => {
     const request: ReqResp = JSON.parse(String(rawData));
+    console.log(request, request.type);
     switch (request.type) {
       case 'create_room': {
         const createGame = allRoutes[request.type];

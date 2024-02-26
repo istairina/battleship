@@ -5,5 +5,7 @@ export const responseToHttp = (type: string, data: string) => {
     id: 0,
   };
 
+  console.log('response', JSON.stringify(response));
+
   return JSON.stringify(response);
 };
